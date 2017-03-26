@@ -1,2 +1,4 @@
 # AI-COURSE-PROJECT1
-for ai course project
+for ai course projects
+
+Project1: Pacman

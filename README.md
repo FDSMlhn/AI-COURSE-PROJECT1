@@ -1,4 +1,4 @@
 # AI-COURSE-PROJECT1
 for ai course projects
 
-Project1: Pacman
+Project1: Search Problem

@@ -130,8 +130,28 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    print 'dd'
+    visited = set()
+    start = problem.getStartState()
+    gamestack = util.Queue()
+    gamestack.push((start,[]))
+
+    # while not gamestack.isEmpty():
+    while not gamestack.isEmpty():            
+        present_state,path = gamestack.pop()
+
+        if problem.isGoalState(present_state):
+            return path
+
+        if present_state not in visited:
+            visited.add(present_state)
+            for (node,action,cost) in problem.getSuccessors(present_state):
+                if node not in visited:
+                    temp = path[:]
+                    temp.append(action)
+                    gamestack.push((node,temp))
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -189,7 +209,29 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = set()
+    start = problem.getStartState()
+    statePQ = util.PriorityQueue()
+    statePQ.push((start,[],0),0+heuristic(start,problem))
+    while True:
+        if statePQ.isEmpty():
+            return []
+        
+        node,path,cost = statePQ.pop()
+
+        if problem.isGoalState(node):
+            return path
+        
+        if node not in visited:
+            visited.add(node)
+        for (nextstate,action,nextCost) in problem.getSuccessors(node):
+            if nextstate not in visited:
+                temp = path[:]
+                temp.append(action)
+                cumulated_cost =  problem.getCostOfActions(temp) + cost
+                statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(start,problem))
+
+    #util.raiseNotDefined()
 
 
 # Abbreviations

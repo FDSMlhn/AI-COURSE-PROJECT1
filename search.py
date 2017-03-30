@@ -131,8 +131,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
-    print 'dd'
-    visited = set()
+    visited = []
     start = problem.getStartState()
     gamestack = util.Queue()
     gamestack.push((start,[]))
@@ -143,11 +142,11 @@ def breadthFirstSearch(problem):
 
         if problem.isGoalState(present_state):
             return path
-
         if present_state not in visited:
-            visited.add(present_state)
+            #visited.append(present_state)
+            visited.append(present_state)
             for (node,action,cost) in problem.getSuccessors(present_state):
-                if node not in visited:
+                if not node in visited:
                     temp = path[:]
                     temp.append(action)
                     gamestack.push((node,temp))
@@ -222,14 +221,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if problem.isGoalState(node):
             return path
         
-        if node not in visited:
-            visited.add(node)
+        # if node not in visited:
+        #     visited.add(node)
         for (nextstate,action,nextCost) in problem.getSuccessors(node):
-            if nextstate not in visited:
-                temp = path[:]
-                temp.append(action)
-                cumulated_cost =  problem.getCostOfActions(temp) + cost
-                statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(start,problem))
+            #if nextstate not in visited:
+            temp = path[:]
+            temp.append(action)
+            cumulated_cost =  problem.getCostOfActions(temp) + cost
+            statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(start,problem))
 
     #util.raiseNotDefined()
 

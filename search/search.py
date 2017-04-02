@@ -197,6 +197,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 temp.append(action)
                 cumulated_cost = problem.getCostOfActions(temp)
                 costPlusHeuristic = heuristic(nextstate,problem) + cumulated_cost
+ #               print nextstate,heuristic(nextstate,problem)
                 statePQ.push((nextstate,temp,cumulated_cost),costPlusHeuristic)
                 
     util.raiseNotDefined()

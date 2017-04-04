@@ -289,6 +289,7 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
         self.costFn=lambda x: 1
+        self.startingGameState = startingGameState        
         #self.goal = set(self.corners)
 
         #self._visited, self._visitedlist= {}, [] # DO NOT CHANGE
@@ -337,8 +338,12 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 next_State = (nextx, nexty)
                 cost = self.costFn(next_State)
-                node = (next_State, corners[:])
-                successors.append( (node, action, cost) )
+                ncorner = corners[:]
+                if next_State in self.corners:
+                    if next_State not in ncorner:
+                        ncorner.append(next_State)
+                node = (next_State, ncorner)
+                successors.append((node, action, cost))
 
         # Bookkeeping for display purposes
         self._expanded += 1 # DO NOT CHANGE
@@ -396,8 +401,39 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # dist = 0
+    # current_state, explored_corners = state
+    # unexplored_corners = [i for i in corners if i not in explored_corners]
+
+    # present_state = current_state
+
+    # while unexplored_corners:
+    #     waitinglist = [(util.manhattanDistance(present_state,i),i) for i in unexplored_corners]
+    #     #waitinglist = [(abs(i[0]-present_state[0]) + abs(i[1]-present_state[1]), i) for i in unexplored_corners]
+    #     choice = min(waitinglist)
+    #     present_state = choice[1]
+    #     unexplored_corners.remove(choice[1])
+    #     dist += choice[0]
+
+    # return dist # Default to trivial solution
+    node = state[0]
+    visitedCorners = state[1]
+    unvisitedCorners = []
+    sum = 0
+    for corner in corners:
+        if not corner in visitedCorners:
+            unvisitedCorners.append(corner)
+
+    currentPoint = node
+    while len(unvisitedCorners) > 0:
+        distance, corner = min([(util.manhattanDistance(currentPoint, corner), corner) for corner in unvisitedCorners])
+        sum += distance
+        currentPoint = corner
+        unvisitedCorners.remove(corner)
+
+    print "Heuristic: ", sum
+    return sum
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

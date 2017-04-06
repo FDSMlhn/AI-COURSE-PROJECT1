@@ -176,7 +176,7 @@ def uniformCostSearch(problem):
     #                 gamePQ.update((node,temp,cost+total_cost),cost)
 
 
-    visited = set()
+    visited = list()
     start = problem.getStartState()
     statePQ = util.PriorityQueue()
     statePQ.push((start,[],0),0)
@@ -190,12 +190,12 @@ def uniformCostSearch(problem):
             return path
         
         if node not in visited:
-            visited.add(node)
+            visited.append(node)
         for (nextstate,action,nextCost) in problem.getSuccessors(node):
             if nextstate not in visited:
                 temp = path[:]
                 temp.append(action)
-                cumulated_cost = cost + problem.getCostOfActions(temp)
+                cumulated_cost = problem.getCostOfActions(temp)
                 statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost)
 
 def nullHeuristic(state, problem=None):
@@ -208,28 +208,48 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    visited = set()
-    start = problem.getStartState()
-    statePQ = util.PriorityQueue()
-    statePQ.push((start,[],0),0+heuristic(start,problem))
-    while True:
-        if statePQ.isEmpty():
-            return []
+    # visited = []
+    # start = problem.getStartState()
+    # statePQ = util.PriorityQueue()
+    # statePQ.push((start,[],0),0+heuristic(start,problem))
+    # while True:
+    #     if statePQ.isEmpty():
+    #         return []
         
-        node,path,cost = statePQ.pop()
+    #     node,path,cost = statePQ.pop()
+
+    #     if problem.isGoalState(node):
+    #         return path
+        
+    #     if node not in visited:
+    #         visited.append(node)
+    #     for (nextstate,action,nextCost) in problem.getSuccessors(node):
+    #         if nextstate not in visited:
+    #             temp = path[:]
+    #             temp.append(action)
+    #             cumulated_cost =  problem.getCostOfActions(temp)
+    #             statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(nextstate,problem))
+    # return []
+    closedset = []
+    fringe = util.PriorityQueue()
+    start = problem.getStartState()
+    fringe.push( (start, []), heuristic(start, problem))
+
+    while not fringe.isEmpty():
+        node, actions = fringe.pop()
 
         if problem.isGoalState(node):
-            return path
-        
-        # if node not in visited:
-        #     visited.add(node)
-        for (nextstate,action,nextCost) in problem.getSuccessors(node):
-            #if nextstate not in visited:
-            temp = path[:]
-            temp.append(action)
-            cumulated_cost =  problem.getCostOfActions(temp) + cost
-            statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(start,problem))
+            return actions
 
+        closedset.append(node)
+
+        for coord, direction, cost in problem.getSuccessors(node):
+            if not coord in closedset:
+                new_actions = actions + [direction]
+                score = problem.getCostOfActions(new_actions) + heuristic(coord, problem)
+                fringe.push( (coord, new_actions), score)
+
+    return []
     #util.raiseNotDefined()
 
 

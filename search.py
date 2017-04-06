@@ -230,6 +230,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #             cumulated_cost =  problem.getCostOfActions(temp)
     #             statePQ.push((nextstate,temp,cumulated_cost),cumulated_cost + heuristic(nextstate,problem))
     # return []
+
+
     closedset = []
     fringe = util.PriorityQueue()
     start = problem.getStartState()
@@ -241,13 +243,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if problem.isGoalState(node):
             return actions
 
-        closedset.append(node)
 
-        for coord, direction, cost in problem.getSuccessors(node):
-            if not coord in closedset:
-                new_actions = actions + [direction]
-                score = problem.getCostOfActions(new_actions) + heuristic(coord, problem)
-                fringe.push( (coord, new_actions), score)
+        if node not in closedset:
+            closedset.append(node)
+            for coord, direction, cost in problem.getSuccessors(node):
+                if not coord in closedset:
+                    new_actions = actions + [direction]
+                    score = problem.getCostOfActions(new_actions) + heuristic(coord, problem)
+                    fringe.push( (coord, new_actions), score)
 
     return []
     #util.raiseNotDefined()

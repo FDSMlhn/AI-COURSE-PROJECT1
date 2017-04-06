@@ -386,108 +386,125 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+
+
+    ########################################################
+    ######## No.1 Manhanttan distance
     # corners = problem.corners # These are the corner coordinates
     # walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     # dist = 0
-    # current_state, explored_corners = state
-    # unexplored_corners = [i for i in corners if i not in explored_corners]
+    # present_state, unexplored_corners = state
 
-    # present_state = current_state
-
-
-    # while unexplored_corners:
-    #     waitinglist = [(util.manhattanDistance(present_state,i),i) for i in unexplored_corners]
+    # if not len(unexplored_corners):
+    #     return 0
+    # waitinglist = [util.manhattanDistance(present_state,i) for i in unexplored_corners]
     #     #waitinglist = [(abs(i[0]-present_state[0]) + abs(i[1]-present_state[1]), i) for i in unexplored_corners]
-    #     choice = min(waitinglist)
-    #     present_state = choice[1]
-    #     unexplored_corners.remove(choice[1])
-    #     dist += choice[0]
+    #     # choice = min(waitinglist)
+    #     # present_state = choice[1]
+    #     # unexplored_corners.remove(choice[1])
+    #     # dist += choice[0]
 
-    # return dist-(4-len(explored_corners))*1000000 # Default to trivial solution
+    # return  min(waitinglist)# Default to trivial solution
+
+
+    ##############################################################
+    ###accurate one
 
     # corners = problem.corners # These are the corner coordinates
     # walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-    # return 0
+    # present_state, unexplored_corners = state
 
+    # if not len(unexplored_corners):
+    #     return 0
+
+    # if 'food_dist' not in problem.heuristicInfo:
+    #     # construct
+    #     dis = {}
+    #     space = []
+    #     for i in range(problem.walls.width):
+    #         for j in range(problem.walls.height):
+    #             if walls[i][j] == False:
+    #                 space.append((i,j))
+    #     spaceLen = len(space)
+    #     problem.heuristicInfo['spacelen'] = len(space)
+    # ## Construct dis[i,j,0] - init
+    #     for i in space:
+    #         for j in space:
+    #             temp = 99999
+    #             if i == j:
+    #                 temp = 0
+    #             if util.manhattanDistance(i,j) == 1:
+    #                 temp = 1
+    #             dis[i,j,0] = temp
+    
+    # ## iterate to get dis[start, end, blanks used]
+    #     for k in range(0,len(space)):
+    #         tempnode = space[k]
+    #         for i in space:
+    #             for j in space:
+    #                 temp = dis[i,tempnode,k] + dis[tempnode,j,k]
+    #                 dis[i,j,k+1] = min(temp,dis[i,j,k])
+                
+        
+    #     left = [node for node in corners if node[0]==1]
+    #     right = list(set(corners) - set(left))
+        
+    #     left_right = []
+    #     left_right.append(dis[left[0],left[1],spaceLen])
+    #     left_right.append(dis[right[0],right[1],spaceLen])
+
+    #     between=[]
+    #     for i in left:
+    #         for j in right:
+    #             between.append(dis[i,j,spaceLen])
+
+    #     result = [left_right,between]
+
+    #     problem.heuristicInfo['food_dist'] = result
+    # else:
+    #     result = problem.heuristicInfo['food_dist']
+
+
+    
+    # mindist = min([util.manhattanDistance(present_state,i) for i in unexplored_corners])
+
+
+    # if len(unexplored_corners)==4:
+    #     copy= result[0]+result[1]
+    #     min_1 =min(result[0])
+    #     min_2 =min(result[1])
+    #     mindist = mindist + min_1 + min_2
+    #     copy.remove(min_1)
+    #     copy.remove(min_2)
+    #     return min(copy)+mindist
+    # if len(unexplored_corners)==3:
+    #     return mindist + min(result[0]) + min(result[1])
+    # if len(unexplored_corners)==2:
+    #     return mindist + min(min(result[0]),min(result[1]))
+    # if len(unexplored_corners)==1:
+    #     return mindist
+    ###############################################################################################################
+    #### Height and Width
+    
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     present_state, unexplored_corners = state
 
-    if not len(unexplored_corners):
+    if len(unexplored_corners)==0:
         return 0
+    width_list = [i[0] for i in corners]
 
-    if 'food_dist' not in problem.heuristicInfo:
-        # construct
-        dis = {}
-        space = []
-        for i in range(problem.walls.width):
-            for j in range(problem.walls.height):
-                if walls[i][j] == False:
-                    space.append((i,j))
-        spaceLen = len(space)
-        problem.heuristicInfo['spacelen'] = len(space)
-    ## Construct dis[i,j,0] - init
-        for i in space:
-            for j in space:
-                temp = 99999
-                if i == j:
-                    temp = 0
-                if util.manhattanDistance(i,j) == 1:
-                    temp = 1
-                dis[i,j,0] = temp
-    
-    ## iterate to get dis[start, end, blanks used]
-        for k in range(0,len(space)):
-            tempnode = space[k]
-            for i in space:
-                for j in space:
-                    temp = dis[i,tempnode,k] + dis[tempnode,j,k]
-                    dis[i,j,k+1] = min(temp,dis[i,j,k])
-                
-        
-        left = [node for node in corners if node[0]==1]
-        right = list(set(corners) - set(left))
-        
-        left_right = []
-        left_right.append(dis[left[0],left[1],spaceLen])
-        left_right.append(dis[right[0],right[1],spaceLen])
+    height_list = [i[1] for i in corners]
 
-        between=[]
-        for i in left:
-            for j in right:
-                between.append(dis[i,j,spaceLen])
+    width = max(width_list) - min(width_list)
+    height = max(height_list) - min(height_list)
+    result =[width,height]
 
-        result = [left_right,between]
-
-        problem.heuristicInfo['food_dist'] = result
-    else:
-        result = problem.heuristicInfo['food_dist']
-
-
-    
-    mindist = min([util.manhattanDistance(present_state,i) for i in unexplored_corners])
-
-
-    if len(unexplored_corners)==4:
-        copy= result[0]+result[1]
-        min_1 =min(result[0])
-        min_2 =min(result[1])
-        mindist = mindist + min_1 + min_2
-        copy.remove(min_1)
-        copy.remove(min_2)
-        return min(copy)+mindist
-    if len(unexplored_corners)==3:
-        return mindist + min(result[0]) + min(result[1])
-    if len(unexplored_corners)==2:
-        return mindist + min(min(result[0]),min(result[1]))
-    if len(unexplored_corners)==1:
-        return mindist
-
-    # l = result[0][:]
-    # l = l + result[1]
-
-
+    dist =min([util.manhattanDistance(present_state, i) for i in unexplored_corners])
+    l = len(unexplored_corners)
+    return (l-1)//2 * max(result)+ l//2 *min(result) + dist
+    ###############################################################################################################
     # for i in range(len(unexplored_corners)-1):
     #     mindist += min(l)
     #     l.remove(min(l))

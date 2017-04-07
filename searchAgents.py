@@ -651,15 +651,64 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+    # position, foodGrid = state
+    # a = foodGrid.asList()
+    # if not a:
+    #     return 0
+
+    # dist = [util.manhattanDistance(i,position) for i in a]
+    # dist1 = max(dist)
+    # dist2 = min(dist) + len(a) -1
+    # return max(dist1,dist2)
+
     position, foodGrid = state
-    a = foodGrid.asList()
-    if not a:
+    "*** YOUR CODE HERE ***"
+    x,y = position
+    if foodGrid.count() == 0:
         return 0
 
-    dist = [util.manhattanDistance(i,position) for i in a]
-    dist1 = max(dist)
-    dist2 = min(dist) + len(a) -1
-    return max(dist1,dist2)
+    problem.heuristicInfo['wallCount'] = problem.walls.count()
+    wall = problem.walls
+    foods = foodGrid.asList()
+    if 'Dis' not in problem.heuristicInfo:
+        # construct
+        dis = {}
+        space = []
+        for i in range(problem.walls.width):
+            for j in range(problem.walls.height):
+                if wall[i][j] == False:
+                    space.append((i,j))
+        spaceLen = len(space)
+        problem.heuristicInfo['spacelen'] = len(space)
+    ## Construct dis[i,j,0] - init
+        for i in space:
+            for j in space:
+                temp = 99999
+                if i == j:
+                    temp = 0
+                if util.manhattanDistance(i,j) == 1:
+                    temp = 1
+                dis[i,j,0] = temp
+    
+    ## iterate to get dis[start, end, blanks used]
+        for k in range(0,len(space)):
+            tempnode = space[k]
+            for i in space:
+                for j in space:
+                    temp = dis[i,tempnode,k] + dis[tempnode,j,k]
+                    dis[i,j,k+1] = min(temp,dis[i,j,k])
+                
+        problem.heuristicInfo['Dis'] = dis
+    else:
+        dis = problem.heuristicInfo['Dis']
+        spaceLen = problem.heuristicInfo['spacelen']
+    
+    if len(foods) >0:
+        distances=[dis[position,node,spaceLen]for node in foods]
+        heuristicDis1 = min(distances)
+        heuristicDis2 = max(distances)
+    
+    return max(heuristicDis1+len(foods)-1,heuristicDis2)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -689,7 +738,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
+        return search.uniformCostSearch(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -725,6 +774,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
+        return self.food[x][y]
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
